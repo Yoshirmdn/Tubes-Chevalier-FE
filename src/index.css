@@ -80,4 +80,8 @@
   .text-caption-bold {
     @apply font-Urbanist text-base font-bold;
   }
+
+  .after-content {
+    content: "";
+  }
 }

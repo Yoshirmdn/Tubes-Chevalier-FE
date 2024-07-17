@@ -208,7 +208,9 @@ export default function Beranda() {
             </div>
           </div>
           <button className="mt-10 px-10 py-2 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] bg-white rounded-md">
-            <p className="font-semibold">Lihat lebih banyak </p>
+            <a href="http://localhost:5173/berita" className="font-semibold">
+              Lihat lebih banyak{" "}
+            </a>
           </button>
         </div>
       </section>
@@ -360,7 +362,9 @@ export default function Beranda() {
             </div>
           </div>
           <button className="mt-10 px-10 py-2 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] bg-white rounded-md">
-            <p className="font-semibold">Lihat lebih banyak </p>
+            <a href="http://localhost:5173/artikel" className="font-semibold">
+              Lihat lebih banyak{" "}
+            </a>
           </button>
         </div>
       </section>
@@ -512,7 +516,7 @@ export default function Beranda() {
             </div>
           </div>
           <button className="mt-10 px-10 py-2 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] bg-white rounded-md">
-            <p className="font-semibold">Lihat lebih banyak </p>
+            <p className="font-semibold">Lihat lebih banyak</p>
           </button>
         </div>
       </section>
@@ -670,7 +674,12 @@ export default function Beranda() {
                 <img src={berita1} alt="" className="object-cover rounded-md" />
                 <div className="flex justify-between items-center w-full mt-4"></div>
                 <button className="w-full rounded-md shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] px-2 py-3 flex justify-center items-center mt-4">
-                  <p className="font-medium">Lihat lebih banyak</p>
+                  <a
+                    href="http://localhost:5173/DaftarBudaya"
+                    className="font-medium"
+                  >
+                    Lihat lebih banyak
+                  </a>
                 </button>
               </div>
             </div>
