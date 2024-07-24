@@ -1,9 +1,13 @@
 import React from "react";
-
+import Logo from "../../assets/img-beranda/LOGO.png";
 export default function Navbar() {
   return (
-    <nav className="bg-gradient-to-r from-jabarayaColors-700 to-jabarayaColors-900 p-4 w-full relative top-0">
-      <div className="container mx-auto flex justify-end items-center">
+    <nav className="bg-gradient-to-r from-jabarayaColors-700 to-jabarayaColors-900 p-4 w-full relative top-0 ">
+      <div className=" flex justify-between items-center">
+        <div className="flex items-center justify-center">
+          <img src={Logo} alt="" className="w-[3rem] h-[3rem] " />
+          <p className="text-white text-[15px]">JABARAYA</p>
+        </div>
         <div className="space-x-4 ml-auto text-center">
           <a
             href="/"
