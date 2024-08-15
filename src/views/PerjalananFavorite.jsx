@@ -163,7 +163,7 @@ export default function PerjalananFavorite() {
 
               {/* MAPS */}
               <div className="fixed h-screen lg:w-1/3 xl:w-[32%] top-0 right-0 hidden lg:block">
-                <MapsView />
+                <MapsView travelPlan={travelPlan} />
               </div>
             </div>
           </section>
