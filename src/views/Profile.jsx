@@ -13,6 +13,7 @@ import jalan from "../assets/img-beranda/jalan.png";
 import jam from "../assets/img-beranda/jam.png";
 import iconSettings from "../assets/icons/icon-settings.svg";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -34,12 +35,13 @@ export default function Profile() {
         if (res.data) {
           setTravelPlans(res.data.data);
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
         const response = err.response;
         console.error(response);
+        toast.error("Something went wrong!");
       })
       .finally(() => {
         setIsLoading(false);
@@ -148,15 +150,15 @@ const TravelCard = ({ travelPlan, getTravelPlans }) => {
       .delete(`/travel-plans/${id}`)
       .then((res) => {
         if (res.data?.statusCode === 200) {
+          toast.success(res.data?.message);
           getTravelPlans();
         } else {
-          window.alert("Failed to delete Travel Plan");
+          toast.error("Failed to delete Travel Plan");
         }
       })
       .catch((err) => {
         const response = err.response;
-        console.log(err);
-        window.alert("Failed to delete Travel Plan");
+        toast.error("Failed to delete Travel Plan");
         console.error(response);
       })
       .finally(() => {

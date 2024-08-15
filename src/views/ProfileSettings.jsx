@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import axiosClient from "../api/axios/axios";
 import Loading from "../components/Loading";
 import AvatarModal from "../components/AvatarModal";
+import toast from "react-hot-toast";
 
 export default function ProfileSettings() {
   const navigate = useNavigate();
@@ -21,17 +22,22 @@ export default function ProfileSettings() {
 
   const handleLogout = async (event) => {
     event.preventDefault();
-    axiosClient
+    const logoutPromise = axiosClient
       .post("/auth/logout")
       .then(() => {
         localStorage.removeItem("USER_ROLE");
         localStorage.removeItem("ACCESS_TOKEN");
-        window.location.replace("/");
+        navigate("/");
       })
       .catch((err) => {
         const response = err.response;
-        console.log(response);
+        console.error(response);
       });
+    toast.promise(logoutPromise, {
+      loading: "Loading...",
+      success: "User logout successfully",
+      error: "Something went wrong!",
+    });
   };
 
   const getProfileData = async () => {
@@ -42,7 +48,8 @@ export default function ProfileSettings() {
       })
       .catch((err) => {
         const response = err.response;
-        console.log(response);
+        console.error(response);
+        toast.error("Something went wrong!");
       });
   };
 
@@ -111,8 +118,9 @@ const ProfileUpdateDataInput = ({ getProfileData }) => {
           setPhone("");
           getProfileData();
           setErrors(null);
+          toast.success(res.data?.message);
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
@@ -121,10 +129,10 @@ const ProfileUpdateDataInput = ({ getProfileData }) => {
           if (response.data.errors) {
             setErrors(response.data.errors);
           } else {
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           }
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .finally(() => {
@@ -267,8 +275,9 @@ const ProfileInformation = ({ userProfile, getProfileData }) => {
           setAvatarFile("");
           setAvatarFileUrl("");
           setSelectedImage("");
+          toast.success("Avatar changed successfully");
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
@@ -277,10 +286,10 @@ const ProfileInformation = ({ userProfile, getProfileData }) => {
           if (response.data.errors) {
             setErrors(response.data.errors);
           } else {
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           }
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .finally(() => {
@@ -419,10 +428,10 @@ const ProfileChangePassword = () => {
           setCurrPassword("");
           setCurrPasswordConfirmation("");
           setErrors(null);
-          window.alert(res.data.message);
+          toast.success(res.data.message);
           setIsChangePasswordOpen(false);
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
@@ -432,10 +441,10 @@ const ProfileChangePassword = () => {
             setErrors(response.data.errors);
           } else {
             setErrors(null);
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           }
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .finally(() => {

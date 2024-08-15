@@ -3,8 +3,11 @@ import axiosClient from "../api/axios/axios";
 import AvatarModal from "../components/AvatarModal";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/plain.css";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [phoneValue, setPhoneValue] = useState();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -51,9 +54,11 @@ export default function Register() {
         localStorage.setItem("ACCESS_TOKEN", res.data.data.token);
         setErrors(null);
         if (res.data.data.user.role == "user") {
-          window.location.replace("/");
+          navigate("/");
+          toast.success(res.data?.message);
         } else if (res.data.data.user.role === "admin") {
-          window.location.replace("/dashboard");
+          navigate("/dashboard");
+          toast.success(res.data?.message);
         }
       })
       .catch((err) => {
@@ -62,10 +67,10 @@ export default function Register() {
           if (response.data.errors) {
             setErrors(response.data.errors);
           } else {
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           }
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .finally(() => {

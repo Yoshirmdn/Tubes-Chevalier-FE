@@ -19,6 +19,7 @@ import iconTrash from "../assets/icons/icon-trash.svg";
 import iconEdit from "../assets/icons/icon-edit.svg";
 import iconPaper from "../assets/icons/icon-paper.png";
 import AddDestinationModal from "../components/AddDestinationModal";
+import toast from "react-hot-toast";
 
 export default function PerjalananFavorite() {
   const navigate = useNavigate();
@@ -45,21 +46,21 @@ export default function PerjalananFavorite() {
           setStartLocation(res.data.data.start_location);
           setDestinations(res.data.data.destinations);
         } else if (res.data && res.data.statusCode === 404) {
-          window.alert(res.data.message);
+          toast.error(res.data.message);
           navigate("/404");
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.statusCode === 422) {
-          window.alert(err.response.message);
+          toast.error(err.response.message);
         } else if (err.response && err.response.data && err.response.data.statusCode === 404) {
-          window.alert(err.response.data.message);
+          toast.error(err.response.data.message);
           navigate("/404");
         } else {
           console.error(err);
-          window.alert("Failed to fetch travel plan");
+          toast.error("Failed to fetch travel plan");
         }
       })
       .finally(() => {
@@ -93,19 +94,20 @@ export default function PerjalananFavorite() {
       .post(`/travel-plans/${travelPlanId}/destinations`, destinationPayload)
       .then((res) => {
         if (res.data.statusCode === 200 || res.data.statusCode === 201) {
-          window.alert(res.data.message);
+          toast.success(res.data.message);
+
           getTravelPlanData();
           setIsModalDestinationOpen(false);
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
         const response = err.response;
-        if (response.data.statusCode === 422) {
-          window.alert(response.data?.message);
+        if (response.data?.statusCode === 422) {
+          toast.error(response.data?.message);
         } else {
-          window.alert(response.data?.message);
+          toast.error(response.data?.message);
         }
       })
       .finally(() => {
@@ -190,7 +192,7 @@ const TravelRecapCard = ({ travelPlan }) => {
       })
       .catch((err) => {
         const response = err.response;
-        console.log(response);
+        console.error(response);
       })
       .finally(() => {
         setIsLoading(false);
@@ -272,10 +274,10 @@ const TravelDestinationCard = ({ destination, distance, getTravelPlanData }) => 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [note, setNote] = useState(destination.note ? destination.note : "");
   const [isDestinationLoading, setIsDestinationLoading] = useState(false);
-  const [placeRecomendations, setPlaceRecomendations] = useState([]);
+  const [placeRecomendations, setPlaceRecomendations] = useState(null);
 
   useEffect(() => {
-    if (placeRecomendations.length === 0) {
+    if (!placeRecomendations && isExpand) {
       setIsLoadingRecomendation(true);
       const payload = {
         locationLat: destination.detail_location.lat,
@@ -292,55 +294,60 @@ const TravelDestinationCard = ({ destination, distance, getTravelPlanData }) => 
           if (res.data.statusCode === 200 || res.data.statusCode === 201) {
             setPlaceRecomendations(res.data.data);
           } else {
-            window.alert("Something went wrong!");
+            toast.error("Something went wrong!");
           }
         })
         .catch((err) => {
           const response = err.response;
           if (response.data.statusCode === 422) {
             if (response.data.errors) {
-              window.alert(response.data?.message);
+              toast.error(response.data?.message);
             } else {
-              window.alert(response.data?.message);
+              toast.error(response.data?.message);
             }
           } else {
-            window.alert("Something went wrong!");
+            toast.error("Something went wrong!");
           }
         })
         .finally(() => {
           setIsLoadingRecomendation(false);
         });
     }
-  }, []);
+  }, [isExpand]);
 
   const handleDeleteDestination = (e) => {
     e.preventDefault();
 
     setIsLoading(true);
 
-    axiosClient
+    const promise = axiosClient
       .delete(`/travel-plans/${destination.travel_plan_id}/destinations/${destination.id}`)
       .then((res) => {
         if (res.data?.statusCode === 200) {
           getTravelPlanData();
         } else {
-          window.alert("Failed to delete Travel Plan");
+          toast.error("Failed to delete Travel Plan");
         }
       })
       .catch((err) => {
         const response = err.response;
-        window.alert("Failed to delete Travel Plan");
         console.error(response);
       })
       .finally(() => {
         setIsLoading(false);
       });
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Destination delete successfully",
+      error: "Something went wrong!",
+    });
   };
 
   const handleUpdateNoteSubmit = (e) => {
     e.preventDefault();
 
     setIsLoading(true);
+    toast.loading("Loading...");
 
     const payload = {
       note: note ? (note.length > 0 ? note : "") : "",
@@ -353,23 +360,25 @@ const TravelDestinationCard = ({ destination, distance, getTravelPlanData }) => 
         },
       })
       .then((res) => {
+        toast.dismiss();
         if (res.data.statusCode === 200 || res.data.statusCode === 201) {
-          window.alert("Note has been updated");
+          toast.success("Note has been updated");
           getTravelPlanData();
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
         const response = err.response;
+        toast.dismiss();
         if (response.data.statusCode === 422) {
           if (response.data.errors) {
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           } else {
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           }
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .finally(() => {
@@ -381,6 +390,7 @@ const TravelDestinationCard = ({ destination, distance, getTravelPlanData }) => 
     e.preventDefault();
 
     setIsDestinationLoading(true);
+    toast.loading("Loading...");
 
     const destinationPayload = {
       startAt: data.startAt,
@@ -406,23 +416,25 @@ const TravelDestinationCard = ({ destination, distance, getTravelPlanData }) => 
         },
       })
       .then((res) => {
+        toast.dismiss();
         if (res.data.statusCode === 200 || res.data.statusCode === 201) {
-          window.alert("Destination has been updated");
+          toast.success("Destination has been updated");
           getTravelPlanData();
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .catch((err) => {
+        toast.dismiss();
         const response = err.response;
         if (response.data.statusCode === 422) {
           if (response.data.errors) {
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           } else {
-            window.alert(response.data?.message);
+            toast.error(response.data?.message);
           }
         } else {
-          window.alert("Something went wrong!");
+          toast.error("Something went wrong!");
         }
       })
       .finally(() => {
@@ -498,8 +510,8 @@ const TravelDestinationCard = ({ destination, distance, getTravelPlanData }) => 
             {isExpand && <h3 className="text-body-bold mt-3 md:mt-4">Rekomendasi Tempat</h3>}
             <div className="mt-3 md:mt-4">
               {isLoadingRecomendation && <h1 className="text-caption">Loading...</h1>}
-              {!isLoadingRecomendation && placeRecomendations.length === 0 && <h1 className="text-caption">No recomendation data</h1>}
-              {!isLoadingRecomendation && placeRecomendations.length > 0 && (
+              {!isLoadingRecomendation && placeRecomendations && placeRecomendations.length === 0 && <h1 className="text-caption">No recomendation data</h1>}
+              {!isLoadingRecomendation && placeRecomendations && placeRecomendations.length > 0 && (
                 <>
                   <div className="w-full grid grid-cols-3 place-content-between p-1 gap-1.5 md:gap-2 lg:gap-2.5 xl:gap-3">
                     {placeRecomendations &&
